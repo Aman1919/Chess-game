@@ -1,3 +1,5 @@
+import ChessEngine from "../chess";
+import Piece from "./piece/piece";
 import Square  from "./square";
 
 export default class Movement{
@@ -5,31 +7,23 @@ export default class Movement{
         canvas;
         CurrentSquare: Square | null = null;
         NextSquare: Square | null  = null;
-        ValidMoves:Square[] = [];
+        ValidMoves: Square[] = [];
+        chessEngine;
+        
         constructor(Game: any, canvas:any) {
                 this.game = Game;
                 this.canvas = canvas;
+                this.chessEngine = new ChessEngine(this.game);
         }
-
-        OnMouseDown(event: React.MouseEvent<HTMLElement>) {
-                const square = this.getSquare(event);
-                if (!square.getPiece()) return;
-                this.CurrentSquare = square;
-                
-                this.ValidMoves = square.getPiece().getValidMoves(this.game.getState());
-                this.ValidMoves.forEach(s => s.HighLightSquare(this.game.context));
-                console.log(this.ValidMoves);
-        }
-        
+       
         onClickMove(event: React.MouseEvent<HTMLElement>) {
                 if (!this.CurrentSquare) {
                         this.OnMouseDown(event);
                 } else if (this.CurrentSquare && this.NextSquare) {
                         this.onMouseUp(event);
-                        this.emty(); 
-                        
+                        this.emty();
                 } else {
-                        this.emty(); 
+                        this.emty();
                 }
         }
         
@@ -38,8 +32,17 @@ export default class Movement{
                 const square = this.getSquare(event);
                 this.NextSquare = square;
         }
+             
+        private OnMouseDown(event: React.MouseEvent<HTMLElement>) {
+                const square = this.getSquare(event);
+                const piece = square.getPiece();
+                if (!piece || (piece && piece.pieceColor !== this.game.turn)) return;
+                this.CurrentSquare = square;
+                this.selectPiece(piece, square);
+        }
         
-        onMouseUp(event: React.MouseEvent<HTMLElement>) {
+     
+        private onMouseUp(event: React.MouseEvent<HTMLElement>) {
                 if (!this.CurrentSquare || !this.NextSquare) return;
                         const l2 = this.NextSquare.getLocation();
                 const invalidmoves = this.ValidMoves.some((s) => {
@@ -49,8 +52,27 @@ export default class Movement{
                 
                 if (!invalidmoves) return;
                 this.game.MakeMove(this.CurrentSquare, this.NextSquare);
+                this.checkForCheckMate(); 
         }
+        
+        private checkForCheckMate() {
+                
+                if (this.chessEngine.checkForWinner(this.game.getPieces(), this.game.turn, this.game.getState())) {
+                        const winner = this.game.turn ? 'White':'Black';               
+                        this.game.setWinner(winner);
+                        console.log(winner+ ' wins');
+                }
+        }
+        
+        private selectPiece(piece: Piece,square:Square) {
+                
+                const moves = piece.getValidMoves(this.game.getState());
+                const validMove = this.chessEngine.checkforValidMove(this.game.getState(), moves, this.game.turn, square, this.game.getPieces());
+                
+                this.ValidMoves = validMove;
+                this.ValidMoves.forEach(s => s.HighLightSquare(this.game.context));
 
+        }
         
         private emty() {
                 this.CurrentSquare = null;

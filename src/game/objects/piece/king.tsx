@@ -1,5 +1,5 @@
 import Piece from "./piece";
-import { Pieces } from "../../defs";
+import { Pieces } from "../defs";
 import Square from "../square";
 
 export default class King extends Piece {

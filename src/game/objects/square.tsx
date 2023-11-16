@@ -1,6 +1,6 @@
 import Location from "./location";
 import Piece from "./piece/piece";
-import { SquareColor } from "../defs";
+import { SquareColor } from "./defs";
 
 
 class Square{

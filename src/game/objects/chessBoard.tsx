@@ -19,6 +19,7 @@ class ChessBoard {
                 this.state = [[], [], [], [], [], [], [], []];
                 this.pieces = new PieceFactory().create();
                 this.InitializeChessBoard();
+                //fix -  pieces map is not changing its location when any piece is moved
         }
 
         

@@ -1,4 +1,4 @@
-import { FilesAndRanks } from "../defs";
+import { FilesAndRanks } from "./defs";
 
 const files = Object.keys(FilesAndRanks);
 const ranks = Object.values(FilesAndRanks)

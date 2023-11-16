@@ -3,7 +3,7 @@ import Square from "../square";
 export default abstract class Piece{
         pieceColor: number;
         name: string | undefined;
-        protected square: Square | null | undefined;
+        square: Square | null | undefined;
         unicode: string;
         private Killed = false;
         constructor(pieceColor: string) {

@@ -1,5 +1,5 @@
 import Piece from "./piece";
-import { Pieces } from "../../defs";
+import { Pieces } from "../defs";
 import Square from "../square";
 
 export default class Knight extends Piece {
@@ -24,7 +24,6 @@ export default class Knight extends Piece {
                         this.validSquare(location.file + 1,location.rank - 2, board),
                         this.validSquare(location.file - 1,location.rank - 2, board),
                 ];
-console.log(squares);
 
                 const validMoves: any[] = [];
                 squares.forEach(move => {

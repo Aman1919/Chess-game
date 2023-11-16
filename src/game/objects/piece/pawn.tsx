@@ -1,9 +1,9 @@
 import Piece from "./piece";
-import { Pieces } from "../../defs";
+import { Pieces } from "../defs";
 import Square from "../square";
 
 export default class Pawn extends Piece {
-
+        TwoStepBool:boolean = true;
         constructor(pieceColor: string) {
                 super(pieceColor);
                 this.name = "Pawn"
@@ -20,10 +20,14 @@ export default class Pawn extends Piece {
                         if (two && !two.piece) {
                                 Moves.push(two);
                         }
+                        
                 }
+                // if (this.TwoStepBool) this.TwoStepBool = false;
                 return Moves;
         }
-    
+        setTwoStepBool() {
+                this.TwoStepBool = true;
+        }
         CaptureMove(file: number, rank: number, board: Square[][]) {
                 const left = !this.pieceColor ? this.validSquare(file - 1, rank + 1, board) : this.validSquare(file - 1, rank - 1, board);
                 const right = !this.pieceColor ? this.validSquare(file + 1, rank + 1, board) : this.validSquare(file + 1, rank - 1, board);

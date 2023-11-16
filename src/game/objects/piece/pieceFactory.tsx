@@ -5,7 +5,7 @@ import Bishop from "./bishop";
 import Pawn from "./pawn";
 import Knight from "./knight";
 import Queen from "./queen";
-import { FilesAndRanks } from "../../defs";
+import { FilesAndRanks } from "../defs";
 
 export default class PieceFactory{
         create() {
