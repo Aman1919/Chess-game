@@ -21,16 +21,9 @@ const Canvas: React.FC<Props> = ({gameover,setGameOver,setTurn})=>{
                 canvas.height = Math.min(window.innerWidth * 0.9, 720);
                 const context = canvas.getContext('2d');
                 if (!context) return;
-                const g = new Game(canvas.width, canvas.height, context, canvas);
+                const g = new Game(canvas.width, canvas.height, context, canvas,setTurn,setGameOver);
                 setGame(g);
-                const turn = game?.turn?'Black':'White'
-                setTurn(turn);
-                console.log(turn);
                 
-                const a = game?.getWinner()
-                if (a) {
-                        setGameOver(a);
-                }
         },[])
         
         

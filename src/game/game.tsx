@@ -15,7 +15,9 @@ class Game {
         context: CanvasRenderingContext2D;
         moveHistory: MoveHistory[];
         winner:string = "";
-        constructor(width: number, height: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement) {
+        setTurn: (val: string) => void;
+        setGameover: (val: string) => void;
+        constructor(width: number, height: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,setTurn: (val: string) => void,setGameOver: (val: string) => void) {
                 this.ChessBoard = new ChessBoard(width, height, context);
                 this.canvas = canvas;
                 this.width = width;
@@ -23,6 +25,8 @@ class Game {
                 this.context = context;
                 this.Movement = new Movement(this, canvas);
                 this.moveHistory = [];
+                this.setTurn = setTurn;
+                this.setGameover = setGameOver
         }
 
         onMouseClick(event: React.MouseEvent<HTMLElement>) {
@@ -43,7 +47,7 @@ class Game {
                 this.moveHistory.push(
                         new MoveHistory(PrevSquare, NextSquare, piece,nextPiece)
                 );
-                this.turn = this.turn?0:1;
+                this.changeTurn();
         }
         undoMove() {
                 const move = this.moveHistory.pop();
@@ -53,7 +57,13 @@ class Game {
                 move.to.setPiece(move.toPiece, this.context);
                 move.fromPiece.setSquare(move.from);
                 if (move.toPiece) move.toPiece.setSquare(move.to);
-                this.turn = this.turn?0:1;
+                this.changeTurn();
+        }
+        changeTurn() {
+                this.turn = this.turn ? 0 : 1;
+                const turn = this.turn?'Black':'White'
+                
+                this.setTurn(turn);        
         }
         
         getState() {
@@ -65,12 +75,7 @@ class Game {
         }
         setWinner(player:string) {
                 this.winner = player;
-        }
-        getWinner() {
-                if (this.winner.length) {
-                        return this.winner;
-                }
-                return false;
+                this.setGameover(this.winner);       
         }
 }
 

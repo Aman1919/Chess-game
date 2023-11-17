@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Canvas from "./game/canvas";
+import CustomDialog from "./components/customDialog";
 
 export default function App() {
   const [turn, setTurn] = useState('white');
@@ -7,9 +8,10 @@ export default function App() {
 
   return (
     <div className="contanier">
-      {(gameover.length) ? <p>{gameover} is the winner</p> : <p>Who's Turn is it : {turn}</p>}
+      <h1>2 Player Chess Game</h1>
+     <h4 >Turn :{turn}</h4>
       <Canvas gameover={gameover} setGameOver={setGameOver} setTurn={setTurn} />
-    
+      <CustomDialog winner={gameover} handleContinue={()=>setGameOver('')} />
     </div>
 
 )
