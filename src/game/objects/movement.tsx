@@ -1,6 +1,7 @@
 import ChessEngine from "../chess";
 import Piece from "./piece/piece";
 import Square  from "./square";
+import socket from "../../components/socket";
 
 export default class Movement{
         game;
@@ -15,13 +16,44 @@ export default class Movement{
                 this.canvas = canvas;
                 this.chessEngine = new ChessEngine(this.game);
         }
-       
+
+         circularReviver(obj:any) {
+                 var objKeys = Object.keys(obj);
+
+                 if(!obj)return "{" + objKeys[0] +": null" + "}";
+
+                 var keyValueArray = new Array();
+                 for (var i = 0; i < objKeys.length; i++) {
+                         var keyValueString = '"' + objKeys[i] + '":';
+                         var objValue = obj[objKeys[i]];
+                         keyValueString = (typeof objValue == "string") ?
+                             keyValueString = keyValueString + '"' + objValue + '"' :
+                             keyValueString = keyValueString + this.circularReviver(objValue);
+                         keyValueArray.push(keyValueString);
+                 }
+                 return "{" + keyValueArray.join(",") + "}";
+        }
+
         onClickMove(event: React.MouseEvent<HTMLElement>) {
                 if (!this.CurrentSquare) {
                         this.OnMouseDown(event);
                 } else if (this.CurrentSquare && this.NextSquare) {
                         this.onMouseUp(event);
+
+                        if(socket.connected){
+                                console.log('move')
+                                const moves = {
+                                        prevSquare:this.CurrentSquare,
+                                        nextSquare:this.NextSquare,
+                                        room:this.game.room
+                                };
+                                const smove = this.circularReviver(moves);
+                                console.log(smove)
+                                socket.emit('move',smove);
+                                console.log('connected move')
+                        }
                         this.emty();
+
                 } else {
                         this.emty();
                 }
@@ -49,10 +81,10 @@ export default class Movement{
                         const l = s.getLocation();
                         return l2.name === l.name;
                 })
-                
+
                 if (!invalidmoves) return;
                 this.game.MakeMove(this.CurrentSquare, this.NextSquare);
-                this.checkForCheckMate(); 
+                this.checkForCheckMate();
         }
         
         private checkForCheckMate() {

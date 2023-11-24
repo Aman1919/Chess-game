@@ -1,16 +1,18 @@
 
 import { useEffect, useRef, useState } from "react"
 import Game from "./game";
+import socket from "../components/socket";
 
 
 type Props = {
-        gameover: string;
         setGameOver: (val: string) => void;
   setTurn: (val: string) => void;
-  
+room?:string ;
+orientation?:string;
+turn:string;
 };
 
-const Canvas: React.FC<Props> = ({gameover,setGameOver,setTurn})=>{
+const Canvas: React.FC<Props> = ({room,setGameOver,setTurn,orientation,turn})=>{
         const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
         const [game, setGame] = useState<Game | null>(null);        
@@ -21,12 +23,23 @@ const Canvas: React.FC<Props> = ({gameover,setGameOver,setTurn})=>{
                 canvas.height = Math.min(window.innerWidth * 0.9, 720);
                 const context = canvas.getContext('2d');
                 if (!context) return;
-                const g = new Game(canvas.width, canvas.height, context, canvas,setTurn,setGameOver);
+                const g = new Game(canvas.width, canvas.height, context, canvas,setTurn,setGameOver,room);
                 setGame(g);
-                
+             //    socket.on('move',(data)=>{
+             //            console.log('move')
+             // game?.MakeMove(data.prevSquare,data.nextSquare);
+             //    })
         },[])
         
-        
+        function  onClick(e: React.MouseEvent<HTMLElement>){
+                if(!game)return
+                if(!orientation||!room){
+                        game.onMouseClick(e);
+                }else {
+                if(orientation!==turn&&room)return;
+                game.onMouseClick(e);
+                }
+        }
         
         return <canvas
                 

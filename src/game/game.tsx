@@ -1,7 +1,6 @@
 import ChessEngine from "./chess";
 import ChessBoard from "./objects/chessBoard";
 import Movement from "./objects/movement";
-import Pawn from "./objects/piece/pawn";
 import Piece from "./objects/piece/piece";
 import Square from "./objects/square";
 
@@ -14,10 +13,17 @@ class Game {
         Movement: Movement;
         context: CanvasRenderingContext2D;
         moveHistory: MoveHistory[];
-        winner:string = "";
+        winner: string = "";
+        room:string | undefined;
         setTurn: (val: string) => void;
         setGameover: (val: string) => void;
-        constructor(width: number, height: number, context: CanvasRenderingContext2D, canvas: HTMLCanvasElement,setTurn: (val: string) => void,setGameOver: (val: string) => void) {
+
+        constructor(width: number, height: number,
+                    context: CanvasRenderingContext2D,
+                    canvas: HTMLCanvasElement,
+                    setTurn: (val: string) => void,
+                    setGameOver: (val: string) => void,
+                    room?: string) {
                 this.ChessBoard = new ChessBoard(width, height, context);
                 this.canvas = canvas;
                 this.width = width;
@@ -27,6 +33,7 @@ class Game {
                 this.moveHistory = [];
                 this.setTurn = setTurn;
                 this.setGameover = setGameOver
+                this.room = room;
         }
 
         onMouseClick(event: React.MouseEvent<HTMLElement>) {
@@ -44,9 +51,12 @@ class Game {
                 NextSquare.setPiece(piece,this.context);
                 PrevSquare.setPiece(null, this.context);
                 piece.setSquare(NextSquare);
+                nextPiece?.setSquare(null);
                 this.moveHistory.push(
                         new MoveHistory(PrevSquare, NextSquare, piece,nextPiece)
                 );
+                console.log(PrevSquare,NextSquare);
+                
                 this.changeTurn();
         }
         undoMove() {
@@ -56,7 +66,9 @@ class Game {
                 move.from.setPiece(move.to.piece,this.context);
                 move.to.setPiece(move.toPiece, this.context);
                 move.fromPiece.setSquare(move.from);
-                if (move.toPiece) move.toPiece.setSquare(move.to);
+                if (move.toPiece) {
+                        move.toPiece.setSquare(move.to);
+                }
                 this.changeTurn();
         }
         changeTurn() {

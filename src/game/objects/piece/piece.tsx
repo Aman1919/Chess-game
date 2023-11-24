@@ -15,15 +15,18 @@ export default abstract class Piece{
                 return []
         }
         
-        isKilled() {
+        isAlive() {
                 return this.Killed;
+        }
+        isKilled(status:boolean) {
+                this.Killed = status;
         }
         
         isTurn(turn:number) {
                 return turn === this.pieceColor;
         }
         
-        setSquare(square:Square) {
+        setSquare(square:Square | null) {
                 this.square = square;
         }
         
