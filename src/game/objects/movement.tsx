@@ -2,6 +2,7 @@ import ChessEngine from "../chess";
 import Piece from "./piece/piece";
 import Square  from "./square";
 import socket from "../../components/socket";
+import square from "./square";
 
 export default class Movement{
         game;
@@ -17,41 +18,22 @@ export default class Movement{
                 this.chessEngine = new ChessEngine(this.game);
         }
 
-         circularReviver(obj:any) {
-                 var objKeys = Object.keys(obj);
-
-                 if(!obj)return "{" + objKeys[0] +": null" + "}";
-
-                 var keyValueArray = new Array();
-                 for (var i = 0; i < objKeys.length; i++) {
-                         var keyValueString = '"' + objKeys[i] + '":';
-                         var objValue = obj[objKeys[i]];
-                         keyValueString = (typeof objValue == "string") ?
-                             keyValueString = keyValueString + '"' + objValue + '"' :
-                             keyValueString = keyValueString + this.circularReviver(objValue);
-                         keyValueArray.push(keyValueString);
-                 }
-                 return "{" + keyValueArray.join(",") + "}";
-        }
 
         onClickMove(event: React.MouseEvent<HTMLElement>) {
                 if (!this.CurrentSquare) {
                         this.OnMouseDown(event);
                 } else if (this.CurrentSquare && this.NextSquare) {
-                        this.onMouseUp(event);
-
                         if(socket.connected){
-                                console.log('move')
-                                const moves = {
-                                        prevSquare:this.CurrentSquare,
-                                        nextSquare:this.NextSquare,
-                                        room:this.game.room
+                                const move = {
+                                        prevSquare:this.CurrentSquare.getLocation(),
+                                        nextSquare:this.NextSquare.getLocation()
+
                                 };
-                                const smove = this.circularReviver(moves);
-                                console.log(smove)
-                                socket.emit('move',smove);
+                                const room = this.game.room;
+                              socket.emit('move',{move,room});
                                 console.log('connected move')
                         }
+                        this.onMouseUp(event);
                         this.emty();
 
                 } else {
@@ -86,7 +68,21 @@ export default class Movement{
                 this.game.MakeMove(this.CurrentSquare, this.NextSquare);
                 this.checkForCheckMate();
         }
-        
+
+        makeSocketMove(prevSquare:Square,nextSquare:square,state:square[][]){
+                const piece = prevSquare.getPiece();
+                if(!piece)return;
+                const moves = piece.getValidMoves(this.game.getState());
+                const validMove = this.chessEngine.checkforValidMove(this.game.getState(), moves, this.game.turn, prevSquare, this.game.getPieces());
+                const isValidMoves = validMove.some(s=>{
+                        const l = s.getLocation();
+                        return nextSquare.getLocation().name === l.name;
+                })
+                if(!isValidMoves)return;
+                this.game.MakeMove(prevSquare,nextSquare);
+                this.checkForCheckMate();
+        }
+
         private checkForCheckMate() {
                 
                 if (this.chessEngine.checkForWinner(this.game.getPieces(), this.game.turn, this.game.getState())) {

@@ -28,13 +28,16 @@ const [opponent,setOpponent]=useState('');
                     <h5>Turn : {turn}</h5>
                     <h5>RoomId : {room}</h5>
                     <h5>Opponent : {opponent} </h5>
+                    <h5>Orientation : {orientation}</h5>
                 </div>
 
                 <Canvas
                     room={room}
                     setGameOver={setGameOver}
                     setTurn={setTurn}
-                 turn={turn}/>
+                 turn={turn}
+                orientation={orientation}
+                />
                 <CustomDialog
                     open={Boolean(gameover)}
                     title={gameover}

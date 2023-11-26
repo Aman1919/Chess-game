@@ -3,6 +3,7 @@ import ChessBoard from "./objects/chessBoard";
 import Movement from "./objects/movement";
 import Piece from "./objects/piece/piece";
 import Square from "./objects/square";
+import square from "./objects/square";
 
 class Game {
         ChessBoard: ChessBoard;
@@ -55,8 +56,7 @@ class Game {
                 this.moveHistory.push(
                         new MoveHistory(PrevSquare, NextSquare, piece,nextPiece)
                 );
-                console.log(PrevSquare,NextSquare);
-                
+
                 this.changeTurn();
         }
         undoMove() {
@@ -70,6 +70,14 @@ class Game {
                         move.toPiece.setSquare(move.to);
                 }
                 this.changeTurn();
+        }
+        MakeSocketMove(data:any){
+                const nL = data.move.nextSquare;
+                const pL = data.move.prevSquare;
+                const state = this.getState()
+                const nextSquare = state[nL.rank][nL.file];
+                const prevSquare = state[pL.rank][pL.file];
+                this.Movement.makeSocketMove(prevSquare,nextSquare,this.getState());
         }
         changeTurn() {
                 this.turn = this.turn ? 0 : 1;
